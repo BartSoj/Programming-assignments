@@ -1,5 +1,3 @@
-package org.example.assignment1;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -66,11 +64,21 @@ class HitDetection {
      */
     private void printHitStatus(HitStatus hitStatus) {
         switch (hitStatus) {
-            case ERROR -> System.out.println("input error");
-            case NEITHER -> System.out.println("The point does not hit either circle");
-            case FIRST -> System.out.println("The point hits the first circle");
-            case SECOND -> System.out.println("The point hits the second circle");
-            case BOTH -> System.out.println("The point hits both circles");
+            case ERROR:
+                System.out.println("input error");
+                break;
+            case NEITHER:
+                System.out.println("The point does not hit either circle");
+                break;
+            case FIRST:
+                System.out.println("The point hits the first circle");
+                break;
+            case SECOND:
+                System.out.println("The point hits the second circle");
+                break;
+            case BOTH:
+                System.out.println("The point hits both circles");
+                break;
         }
     }
 
