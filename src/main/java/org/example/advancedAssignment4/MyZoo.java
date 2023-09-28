@@ -13,62 +13,90 @@ public class MyZoo {
 
     }
 
-    public void addFoodStorage(FoodStorage foodStorage) {
-        for (FoodStorage foodStorage1 : foodStorages) {
-            if (foodStorage1.getType() == foodStorage.getType()) {
-                throw new RuntimeException("Food storage already exists");
+    private FoodStorage findStorage(FoodType foodType) {
+        for (FoodStorage foodStorage : foodStorages) {
+            if (foodStorage.getType() == foodType) {
+                return foodStorage;
             }
+        }
+        return null;
+    }
+
+    private FoodStorage findStorageOrThrow(FoodType foodType) {
+        FoodStorage foodStorage = findStorage(foodType);
+        if (foodStorage == null) {
+            throw new RuntimeException("Food storage not found");
+        }
+        return foodStorage;
+    }
+
+    private Animal findAnimal(String name) {
+        for (Animal animal : animals) {
+            if (animal.getName().equals(name)) {
+                return animal;
+            }
+        }
+        return null;
+    }
+
+    private Animal findAnimalOrThrow(String name) {
+        Animal animal = findAnimal(name);
+        if (animal == null) {
+            throw new RuntimeException("Animal not found");
+        }
+        return animal;
+    }
+
+    private Home findHome(int homeId) {
+        for (Home home : homes) {
+            if (home.getId() == homeId) {
+                return home;
+            }
+        }
+        return null;
+    }
+
+    private Home findHomeOrThrow(int homeId) {
+        Home home = findHome(homeId);
+        if (home == null) {
+            throw new RuntimeException("Home not found");
+        }
+        return home;
+    }
+
+    public void addFoodStorage(FoodStorage foodStorage) {
+        if (findStorage(foodStorage.getType()) != null) {
+            throw new RuntimeException("Food storage already exists");
         }
         foodStorages.add(foodStorage);
     }
 
+    public void addAnimal(Animal animal) {
+        if (findAnimal(animal.getName()) != null) {
+            throw new RuntimeException("Animal already exists");
+        }
+
+        Home home = findHomeOrThrow(animal.getHomeId());
+        checkHomeConditionsForNewAnimal(animal, home);
+        home.increaseAmount();
+        animals.add(animal);
+    }
+
     public void addHome(Home home) {
-        for (Home home1 : homes) {
-            if (home1.getId() == home.getId()) {
-                throw new RuntimeException("Home already exists");
-            }
+        if (findHome(home.getId()) != null) {
+            throw new RuntimeException("Home already exists");
         }
         homes.add(home);
     }
 
-    public void addAnimal(Animal animal) {
-        for (Animal animal1 : animals) {
-            if (animal1.getName().equals(animal.getName())) {
-                throw new RuntimeException("Animal already exists");
-            }
-        }
-
-        for (Home home : homes) {
-            if (home.getId() == animal.getHomeId()) {
-                checkHomeConditionsForNewAnimal(animal, home);
-                home.setAmount(home.getAmount() + 1);
-                animals.add(animal);
-                return;
-            }
-        }
-        throw new RuntimeException("Home not found");
-    }
-
     public void moveAnimal(String name, int homeId) {
-        for (Animal animal : animals) {
-            if (animal.getName().equals(name)) {
-                for (Home home : homes) {
-                    if (home.getId() == homeId) {
-                        checkHomeConditionsForNewAnimal(animal, home);
-                        home.setAmount(home.getAmount() + 1);
-                        animal.setHomeId(homeId);
-                        for (Home prevHome : homes) {
-                            if (prevHome.getId() == animal.getHomeId()) {
-                                prevHome.setAmount(home.getAmount() - 1);
-                            }
-                        }
-                        return;
-                    }
-                }
-                throw new RuntimeException("Home not found");
-            }
-        }
-        throw new RuntimeException("Animal not found");
+        Animal animal = findAnimalOrThrow(name);
+        Home home = findHomeOrThrow(homeId);
+        checkHomeConditionsForNewAnimal(animal, home);
+        home.increaseAmount();
+        animal.setHomeId(homeId);
+        Home prevHome = findHomeOrThrow(animal.getHomeId());
+        prevHome.decreaseAmount();
     }
 
     private void checkHomeConditionsForNewAnimal(Animal animal, Home home) {
@@ -79,73 +107,39 @@ public class MyZoo {
             throw new RuntimeException("Animal can't live in cage");
         }
         for (Animal animalInHome : animals) {
-            if (animalInHome.getHomeId() == animal.getHomeId()) {
-                if (animalInHome.getType().isHerbivore() && !animal.getType().isHerbivore()) {
-                    throw new RuntimeException("Animal can't live with herbivore");
-                }
-                if ((animalInHome.getType().isCarnivore() || animalInHome.getType().isOmnivore()) && animal.getType() != animalInHome.getType()) {
-                    throw new RuntimeException("Animal can't live with other carnivore or omnivore");
-                }
-                if (animalInHome.getType().isSolitary()) {
-                    throw new RuntimeException("Animal can't live with solitary");
-                }
+            if (animalInHome.getHomeId() == animal.getHomeId() && !animal.canLiveWith(animalInHome)) {
+                throw new RuntimeException("Animal can't live with other animal");
             }
         }
     }
 
     public void removeAnimal(String name) {
-        for (Animal animal : animals) {
-            if (animal.getName().equals(name)) {
-                for (Home home : homes) {
-                    if (home.getId() == animal.getHomeId()) {
-                        home.setAmount(home.getAmount() - 1);
-                        animals.remove(animal);
-                        return;
-                    }
-                }
-                throw new RuntimeException("Home not found");
-            }
-        }
-        throw new RuntimeException("Animal not found");
+        Animal animal = findAnimalOrThrow(name);
+        Home home = findHomeOrThrow(animal.getHomeId());
+        home.decreaseAmount();
+        animals.remove(animal);
     }
 
     public void addFood(FoodType foodType, int amount) {
-        for (FoodStorage foodStorage : foodStorages) {
-            if (foodStorage.getType() == foodType) {
-                if (foodStorage.getAmount() + amount > foodStorage.getCapacity()) {
-                    throw new RuntimeException("Food storage is full");
-                }
-                foodStorage.setAmount(foodStorage.getAmount() + amount);
-                return;
-            }
+        FoodStorage foodStorage = findStorageOrThrow(foodType);
+        if (foodStorage.getAmount() + amount > foodStorage.getCapacity()) {
+            throw new RuntimeException("Not enough capacity in food storage");
         }
-        throw new RuntimeException("Food storage not found");
+        foodStorage.addAmount(amount);
     }
 
     public void feedOfFood(FoodType foodType, int amount, int homeId) {
-        boolean homeExisits = false;
-        for (Home home : homes) {
-            if (home.getId() == homeId) {
-                homeExisits = true;
-                for (Animal animal : animals) {
-                    if (animal.getHomeId() == homeId && !animal.getType().eats(foodType)) {
-                        throw new RuntimeException("Animal can't eat this food");
-                    }
-                }
-                break;
+        findHomeOrThrow(homeId);
+        for (Animal animal : animals) {
+            if (animal.getHomeId() == homeId && !animal.eats(foodType)) {
+                throw new RuntimeException("Animal can't eat this food");
             }
         }
-        if (!homeExisits) {
-            throw new RuntimeException("Home not found");
+
+        FoodStorage foodStorage = findStorageOrThrow(foodType);
+        if (foodStorage.getAmount() < amount) {
+            throw new RuntimeException("Not enough food");
         }
-        for (FoodStorage foodStorage : foodStorages) {
-            if (foodStorage.getType() == foodType) {
-                if (foodStorage.getAmount() >= amount) {
-                    foodStorage.setAmount(foodStorage.getAmount() - amount);
-                }
-                throw new RuntimeException("Not enough food");
-            }
-        }
-        throw new RuntimeException("Food storage not found");
+        foodStorage.removeAmount(amount);
     }
 }

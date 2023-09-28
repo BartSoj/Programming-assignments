@@ -1,8 +1,8 @@
 package org.example.advancedAssignment4;
 
 public class Animal {
-    private String name;
-    private AnimalType type;
+    private final String name;
+    private final AnimalType type;
     private int homeId;
 
     public Animal(String name, AnimalType type, int homeId) {
@@ -11,20 +11,29 @@ public class Animal {
         this.homeId = homeId;
     }
 
+    public boolean canLiveWith(Animal animal) {
+        return (!type.isHerbivore() || animal.getType().isHerbivore())
+                && (!animal.getType().isHerbivore() || type.isHerbivore())
+                && (type.isHerbivore() || animal.getType() == type)
+                && !type.isSolitary()
+                && !animal.getType().isSolitary();
+    }
+
+    public boolean eats(FoodType foodType) {
+        if (type.isCarnivore()) {
+            return foodType.isMeat();
+        } else if (type.isHerbivore()) {
+            return !foodType.isMeat() && !(type == AnimalType.ANTELOPE && foodType == FoodType.CARROTS);
+        }
+        return foodType.isMeat() || foodType == FoodType.CARROTS;
+    }
+
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public AnimalType getType() {
         return type;
-    }
-
-    public void setType(AnimalType type) {
-        this.type = type;
     }
 
     public int getHomeId() {

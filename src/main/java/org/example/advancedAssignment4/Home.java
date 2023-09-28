@@ -1,10 +1,10 @@
 package org.example.advancedAssignment4;
 
 public class Home {
-    private int id;
+    private final int id;
     private int amount;
-    private int capacity;
-    private boolean isCage;
+    private final int capacity;
+    private final boolean isCage;
 
     public Home(int id, int amount, int capacity, boolean isCage) {
         this.id = id;
@@ -17,32 +17,25 @@ public class Home {
         return id;
     }
 
-    public void setId(int id) {
-        this.id = id;
-    }
-
     public int getAmount() {
         return amount;
     }
 
-    public void setAmount(int amount) {
-        this.amount = amount;
+
+    public void increaseAmount() {
+        this.amount++;
+    }
+
+    public void decreaseAmount() {
+        this.amount--;
     }
 
     public int getCapacity() {
         return capacity;
     }
 
-    public void setCapacity(int capacity) {
-        this.capacity = capacity;
-    }
-
     public boolean isCage() {
         return isCage;
-    }
-
-    public void setCage(boolean cage) {
-        isCage = cage;
     }
 
     @Override

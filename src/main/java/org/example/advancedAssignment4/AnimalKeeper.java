@@ -28,7 +28,8 @@ public class AnimalKeeper {
             stringBuilder.append(" ");
             command = scanner.nextInt();
         }
-        System.out.println(stringBuilder.toString().trim());
+        stringBuilder.deleteCharAt(stringBuilder.length() - 1);
+        System.out.println(stringBuilder);
     }
 
     private MyZoo createMyZoo() {

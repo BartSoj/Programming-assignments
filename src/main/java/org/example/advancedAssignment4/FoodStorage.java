@@ -1,9 +1,9 @@
 package org.example.advancedAssignment4;
 
 public class FoodStorage {
-    private FoodType type;
+    private final FoodType type;
     private int amount;
-    private int capacity;
+    private final int capacity;
 
     public FoodStorage(FoodType type, int amount, int capacity) {
         this.type = type;
@@ -15,27 +15,20 @@ public class FoodStorage {
         return type;
     }
 
-    public void setType(FoodType type) {
-        this.type = type;
-    }
-
     public int getAmount() {
         return amount;
     }
 
-    public void setAmount(int amount) {
-        if (amount > capacity) {
-            throw new RuntimeException("Not enough capacity in food storage");
-        }
-        this.amount = amount;
+    public void addAmount(int amount) {
+        this.amount += amount;
+    }
+
+    public void removeAmount(int amount) {
+        this.amount -= amount;
     }
 
     public int getCapacity() {
         return capacity;
-    }
-
-    public void setCapacity(int capacity) {
-        this.capacity = capacity;
     }
 
     @Override

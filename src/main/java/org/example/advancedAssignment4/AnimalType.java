@@ -32,27 +32,11 @@ public enum AnimalType {
         return this == ZEBRA || this == ANTELOPE || this == GIRAFFE;
     }
 
-    public boolean isOmnivore() {
-        return this == BEAR;
-    }
-
     public boolean isSolitary() {
         return this == TIGER || this == LEOPARD || this == BEAR;
     }
 
     public boolean liveInCage() {
         return this == LION || this == TIGER || this == LEOPARD || this == BEAR;
-    }
-
-    public boolean eats(FoodType foodType) {
-        if (isCarnivore()) {
-            return foodType.isMeat();
-        } else if (isHerbivore()) {
-            return !foodType.isMeat() && !(this == ANTELOPE && foodType == FoodType.CARROTS);
-        } else if (isOmnivore()) {
-            return foodType.isMeat() || foodType == FoodType.CARROTS;
-        }
-        return false;
-
     }
 }
