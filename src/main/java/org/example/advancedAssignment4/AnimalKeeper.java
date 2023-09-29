@@ -2,6 +2,12 @@ package org.example.advancedAssignment4;
 
 import java.util.Scanner;
 
+/**
+ * @author Anna Smolko
+ * @author Bartosz Sójka
+ * @ID 1967037
+ * @ID 1960903
+ */
 public class AnimalKeeper {
     private final Scanner scanner = new Scanner(System.in);
 
@@ -14,16 +20,10 @@ public class AnimalKeeper {
         MyZoo myZoo = createMyZoo();
         int command = scanner.nextInt();
         while (command < 5) {
-            if (command == 0) {
-                stringBuilder.append(addAnimal(myZoo) ? "0" : "0!");
-            } else if (command == 1) {
-                stringBuilder.append(moveAnimal(myZoo) ? "1" : "1!");
-            } else if (command == 2) {
-                stringBuilder.append(removeAnimal(myZoo) ? "2" : "2!");
-            } else if (command == 3) {
-                stringBuilder.append(buyOfFood(myZoo) ? "3" : "3!");
-            } else if (command == 4) {
-                stringBuilder.append(feedOfFood(myZoo) ? "4" : "4!");
+            boolean commandResult = executeCommand(command, myZoo);
+            stringBuilder.append(command);
+            if (!commandResult) {
+                stringBuilder.append("!");
             }
             stringBuilder.append(" ");
             command = scanner.nextInt();
@@ -35,15 +35,37 @@ public class AnimalKeeper {
     private MyZoo createMyZoo() {
         MyZoo myZoo = new MyZoo();
         for (FoodType foodType : FoodType.values()) {
-            myZoo.addFoodStorage(new FoodStorage(foodType, 0, 100));
+            myZoo.addFoodStorage(new FoodStorage(foodType, 100));
         }
         for (int i = 0; i < 10; i++) {
-            myZoo.addHome(new Home(i, 0, 2, true));
+            myZoo.addHome(new Home(i, 2, true));
         }
         for (int i = 10; i < 15; i++) {
-            myZoo.addHome(new Home(i, 0, 6, false));
+            myZoo.addHome(new Home(i, 6, false));
         }
         return myZoo;
+    }
+
+    private boolean executeCommand(int command, MyZoo myZoo) {
+        try {
+            switch (command) {
+                case 0:
+                    return addAnimal(myZoo);
+                case 1:
+                    return moveAnimal(myZoo);
+                case 2:
+                    return removeAnimal(myZoo);
+                case 3:
+                    return buyOfFood(myZoo);
+                case 4:
+                    return feedOfFood(myZoo);
+            }
+        } catch (RuntimeException e) {
+            // uncomment for testing
+            e.printStackTrace();
+            return false;
+        }
+        return false;
     }
 
     private boolean addAnimal(MyZoo myZoo) {
@@ -53,7 +75,7 @@ public class AnimalKeeper {
         Animal animal = new Animal(name, animalType, homeId);
         try {
             myZoo.addAnimal(animal);
-        } catch (RuntimeException e) {
+        } catch (ZooRulesViolationException e) {
             return false;
         }
         return true;
@@ -64,7 +86,7 @@ public class AnimalKeeper {
         int homeId = scanner.nextInt();
         try {
             myZoo.moveAnimal(name, homeId);
-        } catch (RuntimeException e) {
+        } catch (ZooRulesViolationException e) {
             return false;
         }
         return true;
@@ -74,7 +96,7 @@ public class AnimalKeeper {
         String name = scanner.next();
         try {
             myZoo.removeAnimal(name);
-        } catch (RuntimeException e) {
+        } catch (ZooRulesViolationException e) {
             return false;
         }
         return true;
@@ -85,7 +107,7 @@ public class AnimalKeeper {
         int amount = scanner.nextInt();
         try {
             myZoo.addFood(foodType, amount);
-        } catch (RuntimeException e) {
+        } catch (ZooRulesViolationException e) {
             return false;
         }
         return true;
@@ -97,7 +119,7 @@ public class AnimalKeeper {
         int homeId = scanner.nextInt();
         try {
             myZoo.feedOfFood(foodType, amount, homeId);
-        } catch (RuntimeException e) {
+        } catch (ZooRulesViolationException e) {
             return false;
         }
         return true;

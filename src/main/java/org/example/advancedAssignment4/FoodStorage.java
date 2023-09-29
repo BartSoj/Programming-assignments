@@ -5,9 +5,8 @@ public class FoodStorage {
     private int amount;
     private final int capacity;
 
-    public FoodStorage(FoodType type, int amount, int capacity) {
+    public FoodStorage(FoodType type, int capacity) {
         this.type = type;
-        this.amount = amount;
         this.capacity = capacity;
     }
 

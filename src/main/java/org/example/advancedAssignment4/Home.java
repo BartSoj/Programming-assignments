@@ -6,9 +6,8 @@ public class Home {
     private final int capacity;
     private final boolean isCage;
 
-    public Home(int id, int amount, int capacity, boolean isCage) {
+    public Home(int id, int capacity, boolean isCage) {
         this.id = id;
-        this.amount = amount;
         this.capacity = capacity;
         this.isCage = isCage;
     }
